@@ -1,9 +1,9 @@
 const express = require('express');
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-const session = require('express-session')
-const mongoose = require('mongoose')
-const MongoStore = require('connect-mongo')
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 
 const dbconfig = require('./db/db-config.json')
 mongoose.connect('mongodb+srv://'+dbconfig.database.user+':'+dbconfig.database.password+'@cluster0.mlknoha.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
@@ -11,7 +11,9 @@ mongoose.connect('mongodb+srv://'+dbconfig.database.user+':'+dbconfig.database.p
         .catch((err)=>{console.log(err)})
 const PORT = process.env.PORT || 8080;
 
-const Roles = require('./modules/rolemodel/rolemodel')
+const Roles = require('./modules/rolemodel/rolemodel');
+const User = require('./modules/usermodel/usermethods');
+const Middleware = require('./modules/middleware/middleware');
 
 
 const app = express()
@@ -29,13 +31,23 @@ app.use(cors(corsOptions))
 //         console.log(req.method)
 // })
 
+
+
+/* 
+* Tittle : Login 
+* Model : Usermodel
+* Date : 16-05-2025
+*/
+
+// app.post()
+
 /* 
 * Tittle : CreateRole
 * Model : Rolemodel
 * Date : 15-05-2025
 */
 
-app.post('/createrole',async(req,res)=>{
+app.post('/api/createrole',async(req,res)=>{
         try {
         let NewRole = {
                 RoleId : req.body.RoleId,
@@ -50,12 +62,19 @@ app.post('/createrole',async(req,res)=>{
         
 })
 
-app.get('/getroles',async(req,res)=>{
+/* 
+* Tittle : GetAllRoles
+* Model : Rolemodel
+* Date : 16-05-2025
+*/
+
+app.get('/api/getroles',async(req,res)=>{
         try{
+                
                 const AllRoles = await Roles.find()
                 const TransArray = AllRoles.map((x)=>{
                         return {
-                                value : x.RoleId,
+                                value : x._id,
                                 label : x.RoleName,
                                 Dbid : x._id,
                                 RoleId : x.RoleId,
@@ -65,10 +84,81 @@ app.get('/getroles',async(req,res)=>{
                 res.status(200).send(TransArray)
         }
         catch{
-
+           res.status(500).send({ error: 'Internal Server Error' });     
         }
 })
 
+/* 
+* Tittle : Save User Info
+* Model : Usermodel
+* Date : 16-05-2025
+*/
 
+app.post('/api/saveuserinfo',(req,res)=>{
+        User.CreateUser(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(201).send(responce)
+                }
+
+        })  
+
+})
+
+/* 
+* Tittle : Get All User
+* Model : Usermodel
+* Date : 16-05-2025
+*/
+
+app.get('/api/getalluser',async(req,res)=>{
+        User.GetallUsers(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(201).send(responce)
+                }
+
+        })  
+})
+
+/* 
+* Tittle : Edit User
+* Model : Usermodel
+* Date : 16-05-2025
+*/
+
+app.post('/api/edituser',async(req,res)=>{
+        User.UpdateUser(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(201).send(responce)
+                }
+
+        })
+})
+
+/* 
+* Tittle : Delete User
+* Model : Usermodel
+* Date : 16-05-2025
+*/
+
+app.post('/api/deleteuser',async(req,res)=>{
+        User.DeleteUser(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(201).send(responce)
+                }
+
+        })
+})
 
 app.listen(PORT,()=>{console.log("App running on port " + PORT)})

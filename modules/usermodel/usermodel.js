@@ -3,29 +3,30 @@ const mongoose = require('mongoose')
 const UsersSchema = new mongoose.Schema({
     UserName : {
         type : mongoose.SchemaTypes.String,
-        require : true
+        //require : true
     },
     Email : {
         type : mongoose.SchemaTypes.String,
-        require : true
+        //require : true
     },
     Password : {
         type : mongoose.SchemaTypes.String,
-        require : true
+        //require : true
     },
     MobileNumber : {
         type : mongoose.SchemaTypes.String,
-        require : true
+        //require : true
     },
     Desigination : {
         type : mongoose.SchemaTypes.String,
-        require : true
+        //require : true
     },
     ProfileImage : {
         type : mongoose.SchemaTypes.String
     },
     RoleId : {
-        type : mongoose.SchemaTypes.Int32
+        type : mongoose.SchemaTypes.ObjectId,
+        ref : 'Role'
     },
     CreatedDate : {
         type : mongoose.SchemaTypes.Date
