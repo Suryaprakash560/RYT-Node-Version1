@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8080;
 
 const Roles = require('./modules/rolemodel/rolemodel');
 const User = require('./modules/usermodel/usermethods');
-const Middleware = require('./modules/middleware/middleware');
+const Loginmodule = require('./modules/loginmodule/login');
 
 
 const app = express()
@@ -22,6 +22,18 @@ const corsOptions = {
     credentials: true,
     methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 }
+app.use(session({
+        secret : 'RYTAPP',
+        saveUninitialized : true,
+        resave : true,
+        cookie: {
+        expires: new Date(Date.now() * 60000 * 60),
+        maxAge: 60000
+      },
+      store:MongoStore.create({
+        client : mongoose.connection.getClient()
+      })
+}))
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors(corsOptions))
@@ -119,7 +131,7 @@ app.get('/api/getalluser',async(req,res)=>{
                         res.status(500).send(err)
                 }
                 else{
-                        res.status(201).send(responce)
+                        res.status(200).send(responce)
                 }
 
         })  
@@ -137,7 +149,7 @@ app.post('/api/edituser',async(req,res)=>{
                         res.status(500).send(err)
                 }
                 else{
-                        res.status(201).send(responce)
+                        res.status(200).send(responce)
                 }
 
         })
@@ -149,16 +161,72 @@ app.post('/api/edituser',async(req,res)=>{
 * Date : 16-05-2025
 */
 
-app.post('/api/deleteuser',async(req,res)=>{
+app.delete('/api/deleteuser',async(req,res)=>{
         User.DeleteUser(req,(err,responce)=>{
                 if(err){
                         res.status(500).send(err)
                 }
                 else{
-                        res.status(201).send(responce)
+                        res.status(200).send(responce)
                 }
-
         })
 })
 
+/* 
+* Tittle : User Login
+* Model : Loginmodile
+* Date : 19-05-2025
+*/
+
+app.post('/api/Login',async(req,res)=>{
+        Loginmodule.Login(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        if(responce[0].Status == 0){
+                               res.status(200).send(responce) 
+                        }
+                        else{
+                                req.session.Issession = 1
+                                req.session.UserId = responce[0]._id
+                                req.session.UserName = responce[0].UserName
+                                req.session.UserEmail = responce[0].Email
+                                req.session.MobileNumber = responce[0].MobileNumber
+                                req.session.Desigination = responce[0].Desigination
+                                req.session.ProfileImage = responce[0].ProfileImage
+                                req.session.RoleId = responce[0].RoleId.RoleId
+                                req.session.RoleName = responce[0].RoleId.RoleName
+                                req.session.RoleIdD = responce[0].RoleId._id
+                                res.status(200).send(responce)
+                        }
+                        
+                }
+        })
+})
+
+app.get('/api/getsession',async(req,res)=>{
+        
+                if(req.session.Issession != 1 ){
+                        res.status(204).send("No Session")
+                }
+                else{
+                        var Responce = []
+                        Responce = [{
+                        Issession : req.session.Issession,
+                        UserId : req.session.UserId,
+                        UserName : req.session.UserName, 
+                        UserEmail : req.session.UserEmail, 
+                        MobileNumber : req.session.MobileNumber ,
+                        Desigination : req.session.Desigination ,
+                        ProfileImage: req.session.ProfileImage ,
+                        RoleId: req.session.RoleId  ,
+                        RoleName : req.session.RoleName ,
+                        RoleIdD : req.session.RoleIdD ,
+                        }]
+                        
+                        res.status(200).send(Responce)
+                }
+       
+})
 app.listen(PORT,()=>{console.log("App running on port " + PORT)})
