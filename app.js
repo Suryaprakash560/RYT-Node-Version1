@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8080;
 const Roles = require('./modules/rolemodel/rolemodel');
 const User = require('./modules/usermodel/usermethods');
 const Loginmodule = require('./modules/loginmodule/login');
-
+const TicketModule = require('./modules/ticketmodule/ticketmethod')
 
 const app = express()
 const corsOptions = {
@@ -27,8 +27,8 @@ app.use(session({
         saveUninitialized : true,
         resave : true,
         cookie: {
-        expires: new Date(Date.now() * 60000 * 60),
-        maxAge: 60000
+        // expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        maxAge: new Date(Date.now() + 1000 * 60 * 60 * 24),
       },
       store:MongoStore.create({
         client : mongoose.connection.getClient()
@@ -205,28 +205,111 @@ app.post('/api/Login',async(req,res)=>{
         })
 })
 
+/* 
+* Tittle : User Logout
+* Date : 20-05-2025
+*/
+
+app.get('/api/logout',async(req,res)=>{
+        req.session.destroy(err => {
+        if (err) {
+             res.status(500).send('Could not log out.');
+        } else {
+                let Responcejson = [{Status:1,msg:'Logged out successfully.'}]
+            res.status(200).send(Responcejson);
+        }
+    });
+})
+/* 
+* Tittle : Get Session
+* Date : 19-05-2025
+*/
 app.get('/api/getsession',async(req,res)=>{
-        
-                if(req.session.Issession != 1 ){
-                        res.status(204).send("No Session")
+        if(req.session.Issession != 1 ){
+                res.status(204).send("No Session")
+        }
+        else{
+                var Responce = []
+                Responce = [{
+                Issession : req.session.Issession,
+                UserId : req.session.UserId,
+                UserName : req.session.UserName, 
+                UserEmail : req.session.UserEmail, 
+                MobileNumber : req.session.MobileNumber ,
+                Desigination : req.session.Desigination ,
+                ProfileImage: req.session.ProfileImage ,
+                RoleId: req.session.RoleId  ,
+                RoleName : req.session.RoleName ,
+                RoleIdD : req.session.RoleIdD ,
+                }]
+                res.status(200).send(Responce)
+        }
+})
+
+/* 
+* Tittle : Ticket Creation
+* Model : Ticketmodule
+* Date : 20-05-2025
+*/
+app.post('/api/saveticket',(req,res)=>{
+        TicketModule.SaveTicket(req,(err,responce)=>{
+                if(err){
+                     res.status(500).send(err)   
                 }
                 else{
-                        var Responce = []
-                        Responce = [{
-                        Issession : req.session.Issession,
-                        UserId : req.session.UserId,
-                        UserName : req.session.UserName, 
-                        UserEmail : req.session.UserEmail, 
-                        MobileNumber : req.session.MobileNumber ,
-                        Desigination : req.session.Desigination ,
-                        ProfileImage: req.session.ProfileImage ,
-                        RoleId: req.session.RoleId  ,
-                        RoleName : req.session.RoleName ,
-                        RoleIdD : req.session.RoleIdD ,
-                        }]
-                        
-                        res.status(200).send(Responce)
+                     res.status(201).send(responce)   
                 }
-       
+        })
 })
+
+/* 
+* Tittle : Update Ticket
+* Model : Ticketmodule
+* Date : 20-05-2025
+*/
+app.post('/api/updateticket',(req,res)=>{
+        TicketModule.UpdateTicket(req,(err,responce)=>{
+                if(err){
+                     res.status(500).send(err)   
+                }
+                else{
+                     res.status(201).send(responce)   
+                }
+        })
+})
+
+
+app.get('/api/getallTickets',(req,res)=>{
+        TicketModule.GetallTickets(req,(err,responce)=>{
+                if(err){
+                     res.status(500).send(err)   
+                }
+                else{
+                     res.status(201).send(responce)   
+                }
+        })
+})
+
+app.post('/api/getallusertickets',(req,res)=>{
+        TicketModule.GetallUserTickets(req,(err,responce)=>{
+                if(err){
+                     res.status(500).send(err)   
+                }
+                else{
+                     res.status(201).send(responce)   
+                }
+        })
+})
+
+app.post('/api/getallsysadmtickets',(req,res)=>{
+        TicketModule.GetallSysAdmTickets(req,(err,responce)=>{
+                if(err){
+                     res.status(500).send(err)   
+                }
+                else{
+                     res.status(201).send(responce)   
+                }
+        })
+})
+
 app.listen(PORT,()=>{console.log("App running on port " + PORT)})

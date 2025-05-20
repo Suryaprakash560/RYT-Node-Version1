@@ -71,6 +71,7 @@ async function DeleteUser (req,callback){
         callback(err,null)
     }
 }
+
 module.exports ={
     CreateUser,
     GetallUsers,
