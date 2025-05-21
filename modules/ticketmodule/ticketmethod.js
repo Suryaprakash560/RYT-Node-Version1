@@ -5,7 +5,7 @@ async function SaveTicket (req,callback){
     try{
         const Bodyobj = {
             TicketDescription : req.body.TicketDescription,
-            UserId : req.session.UserId,
+            UserId : req.session.RoleId==3?req.session.UserId:req.body.UserId,
             TicketStatus: req.body.TicketStatus,
             SysAdminId : req.body.SysAdminId,
             WorksDone : req.body.WorksDone
