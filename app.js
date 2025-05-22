@@ -174,7 +174,7 @@ app.delete('/api/deleteuser',async(req,res)=>{
 
 /* 
 * Tittle : User Login
-* Model : Loginmodile
+* Model : Loginmodel
 * Date : 19-05-2025
 */
 
@@ -278,6 +278,11 @@ app.post('/api/updateticket',(req,res)=>{
         })
 })
 
+/* 
+* Tittle : Get all Tickets
+* Model : Ticketmodule
+* Date : 20-05-2025
+*/
 
 app.get('/api/getallTickets',(req,res)=>{
         TicketModule.GetallTickets(req,(err,responce)=>{
@@ -290,6 +295,11 @@ app.get('/api/getallTickets',(req,res)=>{
         })
 })
 
+/* 
+* Tittle : Get all user tickets
+* Model : Ticketmodule
+* Date : 20-05-2025
+*/
 app.post('/api/getallusertickets',(req,res)=>{
         TicketModule.GetallUserTickets(req,(err,responce)=>{
                 if(err){
@@ -301,6 +311,12 @@ app.post('/api/getallusertickets',(req,res)=>{
         })
 })
 
+
+/* 
+* Tittle : Get all sysadm tickets
+* Model : Ticketmodule
+* Date : 20-05-2025
+*/
 app.post('/api/getallsysadmtickets',(req,res)=>{
         TicketModule.GetallSysAdmTickets(req,(err,responce)=>{
                 if(err){
@@ -312,4 +328,51 @@ app.post('/api/getallsysadmtickets',(req,res)=>{
         })
 })
 
+/* 
+* Tittle : Check email password
+* Model : Loginmodel
+* Date : 22-05-2025
+*/
+app.post('/api/checkemailpassword',(req,res)=>{
+        Loginmodule.Checkemailpassword(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(200).send(responce)   
+                }
+        })
+})
+
+/* 
+* Tittle : Update user password
+* Model : Loginmodel
+* Date : 22-05-2025
+*/
+app.post('/api/updateuserpassword',(req,res)=>{
+        Loginmodule.UpdateUserpassword(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(200).send(responce)   
+                }
+        })
+})
+
+/* 
+* Tittle : Update user password
+* Model : Loginmodel
+* Date : 22-05-2025
+*/
+app.delete('/api/deleteticket',(req,res)=>{
+        TicketModule.Deleteticket(req,(err,responce)=>{
+                if(err){
+                        res.status(500).send(err)
+                }
+                else{
+                        res.status(200).send(responce)
+                }
+        })
+})
 app.listen(PORT,()=>{console.log("App running on port " + PORT)})

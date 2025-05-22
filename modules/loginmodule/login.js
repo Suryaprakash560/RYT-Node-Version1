@@ -31,6 +31,35 @@ async function Login (req,callback){
     }
 }
 
+async function Checkemailpassword (req,callback){
+    const AllUser = await Users.find()
+    const MyUser  = AllUser.filter(User=>Middleware.Decrypt(User.Email,'RYTCKEY') == req.body.Email && Middleware.Decrypt(User.Password,'RYTCKEY') == req.body.Password)
+    let Responce = []
+    if(MyUser.length>0){
+        Responce = [{Status : 1, MSG:'Username Password Matched'}]        
+        callback(null,Responce)
+    }
+    else{
+        Responce = [{Status : 0, MSG:'In valid Username password'}]  
+        callback(null,Responce)
+    }
+}
+
+async function UpdateUserpassword (req,callback){
+    try{
+        const AllUser = await Users.find()
+        const MyUser  = AllUser.filter(User=>Middleware.Decrypt(User.Email,'RYTCKEY') == req.body.Email && Middleware.Decrypt(User.Password,'RYTCKEY') == req.body.Password)
+        const Decodepassword = Middleware.Encrypt(req.body.Newpassword,'RYTCKEY')
+        const changedpassword = await Users.updateOne({_id:MyUser[0]._id},{"Password":Decodepassword})
+        callback(null,changedpassword)
+    }
+    catch(err){
+        callback(err,null)
+    }
+    
+}
 module.exports = {
-    Login
+    Login,
+    Checkemailpassword,
+    UpdateUserpassword
 }

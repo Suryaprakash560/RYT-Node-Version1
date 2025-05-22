@@ -21,6 +21,7 @@ async function SaveTicket (req,callback){
 
 async function UpdateTicket (req,callback){
     try{
+        
         const Bodyobj = {
             TicketDescription : req.body.TicketDescription,
             UserId : req.session.RoleId==3?req.session.UserId:req.body.UserId,
@@ -77,10 +78,21 @@ async function GetallSysAdmTickets (req,callback){
     }
     
 }
+
+async function Deleteticket (req,callback){
+    try{
+        const deletedTicket = await Tickets.deleteOne({"_id":req.body.TicketId})
+        callback(null,deletedTicket)
+    }
+    catch(err){
+        callback(err,null)
+    }
+}
 module.exports = {
     SaveTicket,
     GetallTickets,
     GetallUserTickets,
     GetallSysAdmTickets,
-    UpdateTicket
+    UpdateTicket,
+    Deleteticket
 }
