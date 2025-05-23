@@ -15,7 +15,7 @@ const Roles = require('./modules/rolemodel/rolemodel');
 const User = require('./modules/usermodel/usermethods');
 const Loginmodule = require('./modules/loginmodule/login');
 const TicketModule = require('./modules/ticketmodule/ticketmethod')
-
+const Mailmodule = require('./modules/emailmodule/templatemethods')
 const app = express()
 const corsOptions = {
     origin : true,
@@ -112,7 +112,23 @@ app.post('/api/saveuserinfo',(req,res)=>{
                         res.status(500).send(err)
                 }
                 else{
-                        res.status(201).send(responce)
+                       
+                        if(responce._id!=''){
+                                console.log("responce._id")
+                                Mailmodule.UserCreationmail(responce,(emailErr,emailInfo)=>{
+                                        if (emailErr) {
+                                                console.error('Email failed:', emailErr);
+                                                return res.status(200).json({
+                                                message: 'User created, but email could not be sent'
+                                                });
+                                        }
+                                        return res.status(200).json({
+                                                message: 'User created and email sent successfully'
+                                        });
+                                })
+                        }
+                         res.status(201).send(responce)
+                        // UserCreationmail
                 }
 
         })  
@@ -257,6 +273,19 @@ app.post('/api/saveticket',(req,res)=>{
                      res.status(500).send(err)   
                 }
                 else{
+                        if(responce._id!=''){
+                                Mailmodule.TicketCreationEmail(req,responce,(emailErr,emailInfo)=>{
+                                        if (emailErr) {
+                                                console.error('Email failed:', emailErr);
+                                                return res.status(200).json({
+                                                message: 'User created, but email could not be sent'
+                                                });
+                                        }
+                                        return res.status(200).json({
+                                                message: 'User created and email sent successfully'
+                                        });
+                                })
+                        }
                      res.status(201).send(responce)   
                 }
         })
@@ -273,6 +302,19 @@ app.post('/api/updateticket',(req,res)=>{
                      res.status(500).send(err)   
                 }
                 else{
+                        if(req.body.TicketStatus == 2){
+                                Mailmodule.closeTicketEmail(req,responce,(err,Emailres)=>{
+                                        if (emailErr) {
+                                                console.error('Email failed:', emailErr);
+                                                return res.status(200).json({
+                                                message: 'User created, but email could not be sent'
+                                                });
+                                        }
+                                        return res.status(200).json({
+                                                message: 'User created and email sent successfully'
+                                        });
+                                })
+                        }
                      res.status(201).send(responce)   
                 }
         })

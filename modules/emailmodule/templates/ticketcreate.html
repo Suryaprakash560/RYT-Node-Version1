@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      /* background: #f4f4f4; */
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #0B131E;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .button {
+      display: inline-block;
+      background: #007BFF;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .footer {
+      font-size: 12px;
+      color: #888;
+      margin-top: 30px;
+      text-align: center;
+    }
+    .Wel-RYT{
+        color: #f7dc48;
+        text-align: center;
+    }
+    .hlo-txt{
+        color: #fff;
+        font-size: 15px;
+        text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="Wel-RYT">Ticket Details</h1>
+    <p class="hlo-txt">Hello {{_Name_}},</p>
+    <p class="hlo-txt">{{_UserName_}} have some issues:</p>
+    <p class="hlo-txt">{{_Issues_}}</p>
+    <!-- <a class="button" href="{{_loginUrl_}}">Login</a> -->
+  </div>
+</body>
+</html>
