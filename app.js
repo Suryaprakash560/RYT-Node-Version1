@@ -22,21 +22,22 @@ const corsOptions = {
     credentials: true,
     methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 }
+app.use(cors(corsOptions))
+app.use(cookieParser())
+app.use(express.json())
 app.use(session({
         secret : 'RYTAPP',
         saveUninitialized : true,
         resave : true,
         cookie: {
-        // expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-        maxAge: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        maxAge: 1000 * 60 * 60 * 24,
+    secure: true,               sameSite: 'none',
       },
       store:MongoStore.create({
         client : mongoose.connection.getClient()
       })
 }))
-app.use(cookieParser())
-app.use(express.json())
-app.use(cors(corsOptions))
+
 
 // app.use((req,res,next)=>{
 //         console.log(app)
@@ -114,7 +115,6 @@ app.post('/api/saveuserinfo',(req,res)=>{
                 else{
                        
                         if(responce._id!=''){
-                                console.log("responce._id")
                                 Mailmodule.UserCreationmail(responce,(emailErr,emailInfo)=>{
                                         if (emailErr) {
                                                 console.error('Email failed:', emailErr);
@@ -203,7 +203,7 @@ app.post('/api/Login',async(req,res)=>{
                         if(responce[0].Status == 0){
                                res.status(200).send(responce) 
                         }
-                        else{
+                        else{   
                                 req.session.Issession = 1
                                 req.session.UserId = responce[0]._id
                                 req.session.UserName = responce[0].UserName
