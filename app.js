@@ -18,7 +18,7 @@ const TicketModule = require('./modules/ticketmodule/ticketmethod')
 const Mailmodule = require('./modules/emailmodule/templatemethods')
 const app = express()
 const corsOptions = {
-    origin : 'https://extraordinary-dasik-f0830c.netlify.app',
+    origin : ['http://localhost:3000','https://extraordinary-dasik-f0830c.netlify.app'],
     credentials: true,
     methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 }
@@ -27,8 +27,8 @@ app.use(cookieParser())
 app.use(express.json())
 
 app.use(session({
-  name: 'RYT-Cookies', // optional: name of the cookie
-  secret : process.env.RYT_SEC_KEY, // should be stored in env variable
+//   name: 'RYT-Cookies', // optional: name of the cookie
+  secret : process.env.RYT_SEC_KEY, 
   resave: false,
   saveUninitialized: false,
   cookie: {
