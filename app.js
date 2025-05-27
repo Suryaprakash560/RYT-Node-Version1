@@ -280,6 +280,7 @@ app.get('/api/getsession',async(req,res)=>{
                 RoleName : req.session.RoleName ,
                 RoleIdD : req.session.RoleIdD ,
                 }]
+                console.log("Responce",Responce)
                 res.status(200).send(Responce)
         }
 })
