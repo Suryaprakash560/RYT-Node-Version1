@@ -6,9 +6,9 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
 const dbconfig = require('./db/db-config.json')
-mongoose.connect('mongodb+srv://'+dbconfig.database.user+':'+dbconfig.database.password+'@cluster0.mlknoha.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-        .then(()=>{console.log("Database Connected")})
-        .catch((err)=>{console.log(err)})
+mongoose.connect('mongodb+srv://' + dbconfig.database.user + ':' + dbconfig.database.password + '@cluster0.mlknoha.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+        .then(() => { console.log("Database Connected") })
+        .catch((err) => { console.log(err) })
 const PORT = process.env.PORT || 8080;
 
 const Roles = require('./modules/rolemodel/rolemodel');
@@ -18,29 +18,43 @@ const TicketModule = require('./modules/ticketmodule/ticketmethod')
 const Mailmodule = require('./modules/emailmodule/templatemethods')
 const app = express()
 const corsOptions = {
-    origin : true,
-    credentials: true,
-    methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+        origin: true,
+        credentials: true,
+        methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 }
 app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.json())
 
 app.use(session({
-//   name: 'RYT-Cookies', // optional: name of the cookie
-  secret : process.env.RYT_SEC_KEY, 
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: true,        
-    sameSite: 'none',    
-    maxAge: 24 * 60 * 60 * 1000,
-    domain : '.onrender.com'
-  },
-  store:MongoStore.create({
-        client : mongoose.connection.getClient()
-      })
+        //   name: 'RYT-Cookies', // optional: name of the cookie
+        secret: process.env.RYT_SEC_KEY,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 24 * 60 * 60 * 1000,
+                domain: '.onrender.com'
+        },
+        User :{
+Issession : 0,
+        UserId : '',
+        UserName :'',
+        Desigination: '',
+        ProfileImage: '',
+        RoleId: 0,
+        RoleName: '',
+        RoleIdD :'',
+        MobileNumber : '',
+        UserEmail : '',
+        },
+        
+        store: MongoStore.create({
+          
+                client: mongoose.connection.getClient()
+        })
 }));
 
 // app.use(session({
@@ -80,19 +94,19 @@ app.use(session({
 * Date : 15-05-2025
 */
 
-app.post('/api/createrole',async(req,res)=>{
+app.post('/api/createrole', async (req, res) => {
         try {
-        let NewRole = {
-                RoleId : req.body.RoleId,
-                RoleName: req.body.RoleName,
-                CreatedDate : new Date()    
-        }
-        const creatdRoles = await Roles.create(NewRole)
-        res.send(creatdRoles).status(201)
+                let NewRole = {
+                        RoleId: req.body.RoleId,
+                        RoleName: req.body.RoleName,
+                        CreatedDate: new Date()
+                }
+                const creatdRoles = await Roles.create(NewRole)
+                res.send(creatdRoles).status(201)
         } catch (err) {
                 res.status(500).send({ error: 'Internal Server Error' });
         }
-        
+
 })
 
 /* 
@@ -101,23 +115,23 @@ app.post('/api/createrole',async(req,res)=>{
 * Date : 16-05-2025
 */
 
-app.get('/api/getroles',async(req,res)=>{
-        try{
-                
+app.get('/api/getroles', async (req, res) => {
+        try {
+
                 const AllRoles = await Roles.find()
-                const TransArray = AllRoles.map((x)=>{
+                const TransArray = AllRoles.map((x) => {
                         return {
-                                value : x._id,
-                                label : x.RoleName,
-                                Dbid : x._id,
-                                RoleId : x.RoleId,
-                                RoleName : x.RoleName,
+                                value: x._id,
+                                label: x.RoleName,
+                                Dbid: x._id,
+                                RoleId: x.RoleId,
+                                RoleName: x.RoleName,
                         }
                 })
                 res.status(200).send(TransArray)
         }
-        catch{
-           res.status(500).send({ error: 'Internal Server Error' });     
+        catch {
+                res.status(500).send({ error: 'Internal Server Error' });
         }
 })
 
@@ -127,19 +141,19 @@ app.get('/api/getroles',async(req,res)=>{
 * Date : 16-05-2025
 */
 
-app.post('/api/saveuserinfo',(req,res)=>{
-        User.CreateUser(req,(err,responce)=>{
-                if(err){
+app.post('/api/saveuserinfo', (req, res) => {
+        User.CreateUser(req, (err, responce) => {
+                if (err) {
                         res.status(500).send(err)
                 }
-                else{
-                       
-                        if(responce._id!=''){
-                                Mailmodule.UserCreationmail(responce,(emailErr,emailInfo)=>{
+                else {
+
+                        if (responce._id != '') {
+                                Mailmodule.UserCreationmail(responce, (emailErr, emailInfo) => {
                                         if (emailErr) {
                                                 console.error('Email failed:', emailErr);
                                                 return res.status(200).json({
-                                                message: 'User created, but email could not be sent'
+                                                        message: 'User created, but email could not be sent'
                                                 });
                                         }
                                         return res.status(200).json({
@@ -147,11 +161,11 @@ app.post('/api/saveuserinfo',(req,res)=>{
                                         });
                                 })
                         }
-                         res.status(201).send(responce)
+                        res.status(201).send(responce)
                         // UserCreationmail
                 }
 
-        })  
+        })
 
 })
 
@@ -161,16 +175,16 @@ app.post('/api/saveuserinfo',(req,res)=>{
 * Date : 16-05-2025
 */
 
-app.get('/api/getalluser',async(req,res)=>{
-        User.GetallUsers(req,(err,responce)=>{
-                if(err){
+app.get('/api/getalluser', async (req, res) => {
+        User.GetallUsers(req, (err, responce) => {
+                if (err) {
                         res.status(500).send(err)
                 }
-                else{
+                else {
                         res.status(200).send(responce)
                 }
 
-        })  
+        })
 })
 
 /* 
@@ -179,12 +193,12 @@ app.get('/api/getalluser',async(req,res)=>{
 * Date : 16-05-2025
 */
 
-app.post('/api/edituser',async(req,res)=>{
-        User.UpdateUser(req,(err,responce)=>{
-                if(err){
+app.post('/api/edituser', async (req, res) => {
+        User.UpdateUser(req, (err, responce) => {
+                if (err) {
                         res.status(500).send(err)
                 }
-                else{
+                else {
                         res.status(200).send(responce)
                 }
 
@@ -197,12 +211,12 @@ app.post('/api/edituser',async(req,res)=>{
 * Date : 16-05-2025
 */
 
-app.delete('/api/deleteuser',async(req,res)=>{
-        User.DeleteUser(req,(err,responce)=>{
-                if(err){
+app.delete('/api/deleteuser', async (req, res) => {
+        User.DeleteUser(req, (err, responce) => {
+                if (err) {
                         res.status(500).send(err)
                 }
-                else{
+                else {
                         res.status(200).send(responce)
                 }
         })
@@ -214,32 +228,32 @@ app.delete('/api/deleteuser',async(req,res)=>{
 * Date : 19-05-2025
 */
 
-app.post('/api/Login',async(req,res)=>{
-        
-        Loginmodule.Login(req,(err,responce)=>{
-                if(err){
+app.post('/api/Login', async (req, res) => {
+
+        Loginmodule.Login(req, (err, responce) => {
+                if (err) {
                         res.status(500).send(err)
                 }
-                else{
-                        if(responce[0].Status == 0){
-                               res.status(200).send(responce) 
+                else {
+                        if (responce[0].Status == 0) {
+                                res.status(200).send(responce)
                         }
-                        else{   
+                        else {
                                 console.log("i am here in login")
-                                req.session.Issession = 1
-                                req.session.UserId = responce[0]._id
-                                req.session.UserName = responce[0].UserName
-                                req.session.UserEmail = responce[0].Email
-                                req.session.MobileNumber = responce[0].MobileNumber
-                                req.session.Desigination = responce[0].Desigination
-                                req.session.ProfileImage = responce[0].ProfileImage
-                                req.session.RoleId = responce[0].RoleId.RoleId
-                                req.session.RoleName = responce[0].RoleId.RoleName
-                                req.session.RoleIdD = responce[0].RoleId._id
+                                req.session.User.Issession = 1
+                                req.session.User.UserId = responce[0]._id
+                                req.session.User.UserName = responce[0].UserName
+                                req.session.User.UserEmail = responce[0].Email
+                                req.session.User.MobileNumber = responce[0].MobileNumber
+                                req.session.User.Desigination = responce[0].Desigination
+                                req.session.User.ProfileImage = responce[0].ProfileImage
+                                req.session.User.RoleId = responce[0].RoleId.RoleId
+                                req.session.User.RoleName = responce[0].RoleId.RoleName
+                                req.session.User.RoleIdD = responce[0].RoleId._id
                                 res.status(200).send(responce)
                                 console.log(req.session)
                         }
-                        
+
                 }
         })
 })
@@ -249,40 +263,40 @@ app.post('/api/Login',async(req,res)=>{
 * Date : 20-05-2025
 */
 
-app.get('/api/logout',async(req,res)=>{
+app.get('/api/logout', async (req, res) => {
         req.session.destroy(err => {
-        if (err) {
-             res.status(500).send('Could not log out.');
-        } else {
-                let Responcejson = [{Status:1,msg:'Logged out successfully.'}]
-            res.status(200).send(Responcejson);
-        }
-    });
+                if (err) {
+                        res.status(500).send('Could not log out.');
+                } else {
+                        let Responcejson = [{ Status: 1, msg: 'Logged out successfully.' }]
+                        res.status(200).send(Responcejson);
+                }
+        });
 })
 /* 
 * Tittle : Get Session
 * Date : 19-05-2025
 */
-app.get('/api/getsession',async(req,res)=>{
+app.get('/api/getsession', async (req, res) => {
         console.log(req.session)
-        if(req.session.Issession != 1 ){
+        if (req.session.Issession != 1) {
                 res.status(204).send("No Session")
         }
-        else{
+        else {
                 var Responce = []
                 Responce = [{
-                Issession : req.session.Issession,
-                UserId : req.session.UserId,
-                UserName : req.session.UserName, 
-                UserEmail : req.session.UserEmail, 
-                MobileNumber : req.session.MobileNumber ,
-                Desigination : req.session.Desigination ,
-                ProfileImage: req.session.ProfileImage ,
-                RoleId: req.session.RoleId  ,
-                RoleName : req.session.RoleName ,
-                RoleIdD : req.session.RoleIdD ,
+                        Issession: req.session.Issession,
+                        UserId: req.session.UserId,
+                        UserName: req.session.UserName,
+                        UserEmail: req.session.UserEmail,
+                        MobileNumber: req.session.MobileNumber,
+                        Desigination: req.session.Desigination,
+                        ProfileImage: req.session.ProfileImage,
+                        RoleId: req.session.RoleId,
+                        RoleName: req.session.RoleName,
+                        RoleIdD: req.session.RoleIdD,
                 }]
-                console.log("Responce",Responce)
+                console.log("Responce", Responce)
                 res.status(200).send(Responce)
         }
 })
@@ -292,18 +306,18 @@ app.get('/api/getsession',async(req,res)=>{
 * Model : Ticketmodule
 * Date : 20-05-2025
 */
-app.post('/api/saveticket',(req,res)=>{
-        TicketModule.SaveTicket(req,(err,responce)=>{
-                if(err){
-                     res.status(500).send(err)   
+app.post('/api/saveticket', (req, res) => {
+        TicketModule.SaveTicket(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
                 }
-                else{
-                        if(responce._id!=''){
-                                Mailmodule.TicketCreationEmail(req,responce,(emailErr,emailInfo)=>{
+                else {
+                        if (responce._id != '') {
+                                Mailmodule.TicketCreationEmail(req, responce, (emailErr, emailInfo) => {
                                         if (emailErr) {
                                                 console.error('Email failed:', emailErr);
                                                 return res.status(200).json({
-                                                message: 'User created, but email could not be sent'
+                                                        message: 'User created, but email could not be sent'
                                                 });
                                         }
                                         return res.status(200).json({
@@ -311,7 +325,7 @@ app.post('/api/saveticket',(req,res)=>{
                                         });
                                 })
                         }
-                     res.status(201).send(responce)   
+                        res.status(201).send(responce)
                 }
         })
 })
@@ -321,18 +335,18 @@ app.post('/api/saveticket',(req,res)=>{
 * Model : Ticketmodule
 * Date : 20-05-2025
 */
-app.post('/api/updateticket',(req,res)=>{
-        TicketModule.UpdateTicket(req,(err,responce)=>{
-                if(err){
-                     res.status(500).send(err)   
+app.post('/api/updateticket', (req, res) => {
+        TicketModule.UpdateTicket(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
                 }
-                else{
-                        if(req.body.TicketStatus == 2){
-                                Mailmodule.closeTicketEmail(req,responce,(err,Emailres)=>{
+                else {
+                        if (req.body.TicketStatus == 2) {
+                                Mailmodule.closeTicketEmail(req, responce, (err, Emailres) => {
                                         if (emailErr) {
                                                 console.error('Email failed:', emailErr);
                                                 return res.status(200).json({
-                                                message: 'User created, but email could not be sent'
+                                                        message: 'User created, but email could not be sent'
                                                 });
                                         }
                                         return res.status(200).json({
@@ -340,7 +354,7 @@ app.post('/api/updateticket',(req,res)=>{
                                         });
                                 })
                         }
-                     res.status(201).send(responce)   
+                        res.status(201).send(responce)
                 }
         })
 })
@@ -351,13 +365,13 @@ app.post('/api/updateticket',(req,res)=>{
 * Date : 20-05-2025
 */
 
-app.get('/api/getallTickets',(req,res)=>{
-        TicketModule.GetallTickets(req,(err,responce)=>{
-                if(err){
-                     res.status(500).send(err)   
+app.get('/api/getallTickets', (req, res) => {
+        TicketModule.GetallTickets(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
                 }
-                else{
-                     res.status(201).send(responce)   
+                else {
+                        res.status(201).send(responce)
                 }
         })
 })
@@ -367,13 +381,13 @@ app.get('/api/getallTickets',(req,res)=>{
 * Model : Ticketmodule
 * Date : 20-05-2025
 */
-app.post('/api/getallusertickets',(req,res)=>{
-        TicketModule.GetallUserTickets(req,(err,responce)=>{
-                if(err){
-                     res.status(500).send(err)   
+app.post('/api/getallusertickets', (req, res) => {
+        TicketModule.GetallUserTickets(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
                 }
-                else{
-                     res.status(201).send(responce)   
+                else {
+                        res.status(201).send(responce)
                 }
         })
 })
@@ -384,13 +398,13 @@ app.post('/api/getallusertickets',(req,res)=>{
 * Model : Ticketmodule
 * Date : 20-05-2025
 */
-app.post('/api/getallsysadmtickets',(req,res)=>{
-        TicketModule.GetallSysAdmTickets(req,(err,responce)=>{
-                if(err){
-                     res.status(500).send(err)   
+app.post('/api/getallsysadmtickets', (req, res) => {
+        TicketModule.GetallSysAdmTickets(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
                 }
-                else{
-                     res.status(201).send(responce)   
+                else {
+                        res.status(201).send(responce)
                 }
         })
 })
@@ -400,46 +414,46 @@ app.post('/api/getallsysadmtickets',(req,res)=>{
 * Model : Loginmodel
 * Date : 22-05-2025
 */
-app.post('/api/checkemailpassword',(req,res)=>{
-        Loginmodule.Checkemailpassword(req,(err,responce)=>{
-                if(err){
+app.post('/api/checkemailpassword', (req, res) => {
+        Loginmodule.Checkemailpassword(req, (err, responce) => {
+                if (err) {
                         res.status(500).send(err)
                 }
-                else{
-                        res.status(200).send(responce)   
-                }
-        })
-})
-
-/* 
-* Tittle : Update user password
-* Model : Loginmodel
-* Date : 22-05-2025
-*/
-app.post('/api/updateuserpassword',(req,res)=>{
-        Loginmodule.UpdateUserpassword(req,(err,responce)=>{
-                if(err){
-                        res.status(500).send(err)
-                }
-                else{
-                        res.status(200).send(responce)   
-                }
-        })
-})
-
-/* 
-* Tittle : Update user password
-* Model : Loginmodel
-* Date : 22-05-2025
-*/
-app.delete('/api/deleteticket',(req,res)=>{
-        TicketModule.Deleteticket(req,(err,responce)=>{
-                if(err){
-                        res.status(500).send(err)
-                }
-                else{
+                else {
                         res.status(200).send(responce)
                 }
         })
 })
-app.listen(PORT,()=>{console.log("App running on port " + PORT)})
+
+/* 
+* Tittle : Update user password
+* Model : Loginmodel
+* Date : 22-05-2025
+*/
+app.post('/api/updateuserpassword', (req, res) => {
+        Loginmodule.UpdateUserpassword(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
+                }
+                else {
+                        res.status(200).send(responce)
+                }
+        })
+})
+
+/* 
+* Tittle : Update user password
+* Model : Loginmodel
+* Date : 22-05-2025
+*/
+app.delete('/api/deleteticket', (req, res) => {
+        TicketModule.Deleteticket(req, (err, responce) => {
+                if (err) {
+                        res.status(500).send(err)
+                }
+                else {
+                        res.status(200).send(responce)
+                }
+        })
+})
+app.listen(PORT, () => { console.log("App running on port " + PORT) })
