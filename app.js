@@ -29,7 +29,8 @@ app.use(session({
         secret : 'RYTAPP',
         saveUninitialized : true,
         resave : true,
-        cookie: {httpOnly: true,
+        cookie: {
+                // httpOnly: true,
     secure: true, 
     sameSite: 'none', 
     maxAge: 1000 * 60 * 60 * 24
@@ -196,7 +197,7 @@ app.delete('/api/deleteuser',async(req,res)=>{
 */
 
 app.post('/api/Login',async(req,res)=>{
-        console.log("i am here in login")
+        
         Loginmodule.Login(req,(err,responce)=>{
                 if(err){
                         res.status(500).send(err)
@@ -206,6 +207,7 @@ app.post('/api/Login',async(req,res)=>{
                                res.status(200).send(responce) 
                         }
                         else{   
+                                console.log("i am here in login")
                                 req.session.Issession = 1
                                 req.session.UserId = responce[0]._id
                                 req.session.UserName = responce[0].UserName
@@ -217,6 +219,7 @@ app.post('/api/Login',async(req,res)=>{
                                 req.session.RoleName = responce[0].RoleId.RoleName
                                 req.session.RoleIdD = responce[0].RoleId._id
                                 res.status(200).send(responce)
+                                console.log(req.session)
                         }
                         
                 }
