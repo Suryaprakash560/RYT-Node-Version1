@@ -29,9 +29,10 @@ app.use(session({
         secret : 'RYTAPP',
         saveUninitialized : true,
         resave : true,
-        cookie: {
-        maxAge: 1000 * 60 * 60 * 24,
-    secure: true,               sameSite: 'none',
+        cookie: {httpOnly: true,
+    secure: true, 
+    sameSite: 'none', 
+    maxAge: 1000 * 60 * 60 * 24
       },
       store:MongoStore.create({
         client : mongoose.connection.getClient()
@@ -195,6 +196,7 @@ app.delete('/api/deleteuser',async(req,res)=>{
 */
 
 app.post('/api/Login',async(req,res)=>{
+        console.log("i am here in login")
         Loginmodule.Login(req,(err,responce)=>{
                 if(err){
                         res.status(500).send(err)
