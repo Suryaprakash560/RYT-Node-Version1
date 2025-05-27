@@ -245,7 +245,7 @@ app.get('/api/logout',async(req,res)=>{
 * Date : 19-05-2025
 */
 app.get('/api/getsession',async(req,res)=>{
-        console.log(req.session)
+        console.log(req)
         if(req.session.Issession != 1 ){
                 res.status(204).send("No Session")
         }
