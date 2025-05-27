@@ -25,20 +25,37 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.json())
+
 app.use(session({
-        secret : 'RYTAPP',
-        saveUninitialized : true,
-        resave : true,
-        cookie: {
-                // httpOnly: true,
-        secure: true, 
-        sameSite: 'none', 
-        maxAge: 1000 * 60 * 60 * 24,
-      },
-      store:MongoStore.create({
+  name: 'RYT-Cookies', // optional: name of the cookie
+  secret : process.env.RYT_SEC_KEY, // should be stored in env variable
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: true,        
+    sameSite: 'none',    
+    maxAge: 24 * 60 * 60 * 1000 
+  },
+  store:MongoStore.create({
         client : mongoose.connection.getClient()
       })
-}))
+}));
+
+// app.use(session({
+//         secret : 'RYTAPP',
+//         saveUninitialized : true,
+//         resave : true,
+//         cookie: {
+//                 // httpOnly: true,
+//         secure: true, 
+//         sameSite: 'none', 
+//         maxAge: 1000 * 60 * 60 * 24,
+//       },
+//       store:MongoStore.create({
+//         client : mongoose.connection.getClient()
+//       })
+// }))
 
 
 // app.use((req,res,next)=>{
