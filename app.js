@@ -217,6 +217,7 @@ app.post('/api/Login',async(req,res)=>{
                                 req.session.RoleId = responce[0].RoleId.RoleId
                                 req.session.RoleName = responce[0].RoleId.RoleName
                                 req.session.RoleIdD = responce[0].RoleId._id
+                                console.log(req.session)
                                 res.status(200).send(responce)
                         }
                         
@@ -244,6 +245,7 @@ app.get('/api/logout',async(req,res)=>{
 * Date : 19-05-2025
 */
 app.get('/api/getsession',async(req,res)=>{
+        console.log(req.session)
         if(req.session.Issession != 1 ){
                 res.status(204).send("No Session")
         }
