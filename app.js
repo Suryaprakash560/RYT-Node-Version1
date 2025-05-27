@@ -18,7 +18,7 @@ const TicketModule = require('./modules/ticketmodule/ticketmethod')
 const Mailmodule = require('./modules/emailmodule/templatemethods')
 const app = express()
 const corsOptions = {
-    origin : 'https://extraordinary-dasik-f0830c.netlify.app/',
+    origin : 'https://extraordinary-dasik-f0830c.netlify.app',
     credentials: true,
     methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 }
