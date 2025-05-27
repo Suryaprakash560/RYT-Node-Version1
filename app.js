@@ -18,7 +18,7 @@ const TicketModule = require('./modules/ticketmodule/ticketmethod')
 const Mailmodule = require('./modules/emailmodule/templatemethods')
 const app = express()
 const corsOptions = {
-    origin : true,
+    origin : 'https://extraordinary-dasik-f0830c.netlify.app/',
     credentials: true,
     methods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 }
@@ -31,9 +31,9 @@ app.use(session({
         resave : true,
         cookie: {
                 // httpOnly: true,
-    secure: true, 
-    sameSite: 'none', 
-    maxAge: 1000 * 60 * 60 * 24
+        secure: true, 
+        sameSite: 'none', 
+        maxAge: 1000 * 60 * 60 * 24,
       },
       store:MongoStore.create({
         client : mongoose.connection.getClient()
